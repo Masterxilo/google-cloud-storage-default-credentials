@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+if ! test -d ./google-cloud-cpp ; then
+    git clone https://github.com/googleapis/google-cloud-cpp
+fi
+
+# from their README.md
+which cmake || sudo apt-get install -y cmake 
+cd google-cloud-cpp
+# > From the top-level directory of google-cloud-cpp run these commands:
+test -d $HOME/vcpkg || git -C $HOME clone https://github.com/microsoft/vcpkg.git
+env VCPKG_ROOT=$HOME/vcpkg $HOME/vcpkg/bootstrap-vcpkg.sh -disableMetrics
+cmake -H. -Bcmake-out/ -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build cmake-out -- -j $(nproc)
